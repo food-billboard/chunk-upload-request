@@ -1,7 +1,7 @@
 {
   "yarn": true,
   "contents": "lib",
-  "branch": "master",
+  "branch": "main",
   "cleanup": true,
   "tests": true,
   "publish": true,

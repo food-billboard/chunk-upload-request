@@ -12,6 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/food-billboard/chunk-upload-request.git"
   },
+  "files": [
+    "es/",
+    "lib/"
+  ],
   "keywords": [
     "request",
     "chunk",
@@ -33,6 +37,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
+    "chunk-file-upload": "^1.0.8",
     "lodash-es": "^4.17.21",
     "qs": "^6.10.1"
   }

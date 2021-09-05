@@ -1,6 +1,6 @@
 import { get, merge } from 'lodash-es';
 import { AxiosResponse } from 'axios';
-import { TRequestType, Upload } from 'chunk-file-upload/src';
+import { TRequestType, Upload } from 'chunk-file-upload';
 import {
   request,
   requestCacheSchemaGet,
