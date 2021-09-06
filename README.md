@@ -35,6 +35,6 @@ const App = () => {
 | --- | --- | --- | --- |
 | url | 请求地址 | `string \| [string, string, string?]` | - |
 | instance | Upload实例，不需要传递此参数 |  | - |
-| method | 请求方法 | `string | [string, string, string?]` | [ GET, POST, PUT ] | 
-| headers | 请求头 | `object | [object?, object?, object?]` | - | 
+| method | 请求方法 | `string \| [string, string, string?]` | [ GET, POST, PUT ] | 
+| headers | 请求头 | `object \| [object?, object?, object?]` | - | 
 | withCredentials | 是否携带`cookie` | `boolean` | `false` | 
