@@ -2,10 +2,8 @@
   "name": "chunk-upload-request",
   "version": "1.0.0",
   "description": "chunk file upload request 4 chunk-file-upload",
-  "main": "index.js",
   "scripts": {
-    "test": "jest --config=jest.config.js --verbose",
-    "build": "father-build",
+    "build": "cross-env BUILD_TYPE=lib father-build && cross-env BUILD_TYPE=es father-build",
     "deploy": "np"
   },
   "repository": {
@@ -16,6 +14,10 @@
     "es/",
     "lib/"
   ],
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "lib/index.d.ts",
+  "types": "lib/index.d.ts",
   "keywords": [
     "request",
     "chunk",
@@ -31,8 +33,9 @@
   "devDependencies": {
     "@types/lodash-es": "^4.17.4",
     "@types/qs": "^6.9.7",
+    "babel-plugin-import": "^1.13.3",
+    "cross-env": "^7.0.3",
     "father-build": "^1.19.8",
-    "jest": "^27.1.0",
     "typescript": "^4.4.2"
   },
   "dependencies": {

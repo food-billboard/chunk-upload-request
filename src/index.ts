@@ -6,8 +6,8 @@ import {
   requestCacheSchemaGet,
   requestCacheSchemaSet,
   IRequestOptions,
-} from '@/utils/request';
-import { withTry } from '@/utils/tool';
+} from './utils/request';
+import { withTry } from './utils/tool';
 
 const { BODY_SCHEMA_CACHE, EXIST_DATA_SCHEMA_CACHE, UPLOAD_DATA_SCHEMA_CACHE } =
 requestCacheSchemaGet();
@@ -142,77 +142,83 @@ const methodGetTry = (
   return requestData;
 };
 
-export default function customAction({
-  url,
-  instance,
-  method,
-  headers,
-  withCredentials = true,
-}: {
-  url: string;
+export type ActionParams = {
+  url: string | [string, string, string | undefined];
   instance: Upload;
   method?: [string | false, string, string | false];
   headers?: [object | false, object | false, object | false]
   withCredentials?: boolean 
-}) {
-  const [
-    exitDataFnMethod = 'GET',
-    uploadFnMethod = 'POST',
-    completeFnMethod = 'POST',
-  ] = method || [];
-  const [exitDataFnHeaders, uploadFnHeaders, completeFnHeaders] = headers || [];
+}
 
-  let requestData: TRequestType = {
-    async exitDataFn(params, name) {
-      const [err, value] = await withTry(exitDataFnResponseTry)(
-        params,
-        name,
-        url,
-        instance,
-        {
-          headers: exitDataFnHeaders || {},
-          withCredentials: !!withCredentials,
-          method: exitDataFnMethod,
-        },
-      );
-      if (err || !value) {
-        console.warn(
-          'exitDataFn exist check request fail and will restart the task',
+export default function customAction(defaultParams: Partial<ActionParams>={}) {
+  return function({
+    url=defaultParams.url || "",
+    instance,
+    method=defaultParams.method || [ 'GET', 'POST', 'POST' ],
+    headers=defaultParams.headers || [false, false, false],
+    withCredentials=defaultParams.withCredentials || false,
+  }: ActionParams) {
+    const [
+      exitDataFnMethod = 'GET',
+      uploadFnMethod = 'POST',
+      completeFnMethod = 'POST',
+    ] = method || [];
+    const [ exitFnUrl, uploadUrl, completeUrl ] = Array.isArray(url) ? url : [ url, url, url ]
+    const [exitDataFnHeaders, uploadFnHeaders, completeFnHeaders] = headers || [];
+  
+    let requestData: TRequestType = {
+      async exitDataFn(params, name) {
+        const [err, value] = await withTry(exitDataFnResponseTry)(
+          params,
+          name,
+          exitFnUrl,
+          instance,
+          {
+            headers: exitDataFnHeaders || {},
+            withCredentials: !!withCredentials,
+            method: exitDataFnMethod,
+          },
         );
-        return {
-          data: 0,
-        };
-      }
-      return value;
-    },
-    async uploadFn(formData, name) {
-      return uploadFnResponseTry(formData, name, url, instance, {
-        headers: uploadFnHeaders || {},
-        withCredentials: !!withCredentials,
-        method: uploadFnMethod as any,
-      });
-    },
-    async completeFn(params) {
-      const [err] = await withTry(request)(url, {
-        params,
-        method: (completeFnMethod as any) || 'PUT',
-        headers: completeFnHeaders || {},
-        withCredentials: !!withCredentials,
-      });
-      if (!!err) {
-        console.warn('completeFn complete request fail');
-      }
-    },
-    callback(error, value) {},
-  };
-
-  requestData = methodGetTry(requestData, [
-    exitDataFnMethod,
-    uploadFnMethod,
-    completeFnMethod,
-  ]);
-
-  return {
-    request: requestData,
-  };
+        if (err || !value) {
+          console.warn(
+            'exitDataFn exist check request fail and will restart the task',
+          );
+          return {
+            data: 0,
+          };
+        }
+        return value;
+      },
+      async uploadFn(formData, name) {
+        return uploadFnResponseTry(formData, name, uploadUrl, instance, {
+          headers: uploadFnHeaders || {},
+          withCredentials: !!withCredentials,
+          method: uploadFnMethod as any,
+          file: true 
+        })
+      },
+      async completeFn(params) {
+        const [err] = await withTry(request)(completeUrl, {
+          params,
+          method: (completeFnMethod as any) || 'PUT',
+          headers: completeFnHeaders || {},
+          withCredentials: !!withCredentials,
+        });
+        if (!!err) {
+          console.warn('completeFn complete request fail');
+        }
+      },
+      callback(error, value) {},
+    };
+  
+    requestData = methodGetTry(requestData, [
+      exitDataFnMethod,
+      uploadFnMethod,
+      completeFnMethod,
+    ]);
+  
+    return {
+      request: requestData,
+    };
+  }
 }
