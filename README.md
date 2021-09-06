@@ -33,7 +33,7 @@ const App = () => {
 
 | 属性 | 说明 | 类型 | 默认值 |
 | --- | --- | --- | --- |
-| url | 请求地址 | `string | [string, string, string?]` | - |
+| url | 请求地址 | `string \| [string, string, string?]` | - |
 | instance | Upload实例，不需要传递此参数 |  | - |
 | method | 请求方法 | `string | [string, string, string?]` | [ GET, POST, PUT ] | 
 | headers | 请求头 | `object | [object?, object?, object?]` | - | 
